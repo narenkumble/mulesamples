@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><Graph __version="3.5.0" author="kumblen" created="Tue Jan 20 13:30:25 IST 2015" description="JSON To Pojo" guiVersion="3.4.4.P" id="1421760082528" licenseCode="Unlicensed" licenseType="Unknown" modified="Tue Jan 20 13:30:25 IST 2015" modifiedBy="kumblen" name="JSON_To_Pojo_1" preview-file="${Project_Home}/src/main/resources/JSONExampleUnitedAirlines2.json" revision="1.0" showComponentDetails="false">
+<Global>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/object/flights" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _metadataParentId="ab6f7d12-dbd2-481c-abeb-6ee736e3099a" _parent_id="__parent_id" _type="Input" id="211803f6-a273-49a5-9833-222365b2d700">
+<Record fieldDelimiter="," name="flights" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_parent_id" __systemManaged="true" name="__parent_id" type="string"/>
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __index="0" __sourcePath="{}/object/flights/airlineName" containerType="SINGLE" label="airlineName" name="airlineName" type="string"/>
+<Field __index="1" __sourcePath="{}/object/flights/price" containerType="SINGLE" label="price" name="price" type="integer"/>
+<Field __index="2" __sourcePath="{}/object/flights/departureDate" containerType="SINGLE" label="departureDate" name="departureDate" type="string"/>
+<Field __index="3" __sourcePath="{}/object/flights/planeType" containerType="SINGLE" label="planeType" name="planeType" type="string"/>
+<Field __index="4" __sourcePath="{}/object/flights/origin" containerType="SINGLE" label="origin" name="origin" type="string"/>
+<Field __index="5" __sourcePath="{}/object/flights/emptySeats" containerType="SINGLE" label="emptySeats" name="emptySeats" type="integer"/>
+<Field __index="6" __sourcePath="{}/object/flights/code" containerType="SINGLE" label="code" name="code" type="string"/>
+<Field __index="7" __sourcePath="{}/object/flights/destination" containerType="SINGLE" label="destination" name="destination" type="string"/>
+</Record>
+</Metadata>
+<Metadata __index="0" __referenceCounter="2" __sourcePath="{}/list" _dataStructure="SINGLE_DIMENSIONAL_COLLECTION" _id="__id" _type="Output" id="ea6e123f-8474-4920-85c8-27c3aa242820">
+<Record fieldDelimiter="," name="list" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+<Field __index="0" __sourcePath="{}/list/airlineName" containerType="SINGLE" label="airlineName" name="airlineName" type="string"/>
+<Field __index="1" __sourcePath="{}/list/availableSeats" containerType="SINGLE" label="availableSeats" name="availableSeats" type="integer"/>
+<Field __index="2" __sourcePath="{}/list/departuredate" containerType="SINGLE" label="departuredate" name="departuredate" type="string"/>
+<Field __index="3" __sourcePath="{}/list/destination" containerType="SINGLE" label="destination" name="destination" type="string"/>
+<Field __index="4" __sourcePath="{}/list/flightCode" containerType="SINGLE" label="flightCode" name="flightCode" type="string"/>
+<Field __index="5" __sourcePath="{}/list/origination" containerType="SINGLE" label="origination" name="origination" type="string"/>
+<Field __index="6" __sourcePath="{}/list/planeType" containerType="SINGLE" label="planeType" name="planeType" type="string"/>
+<Field __index="7" __sourcePath="{}/list/price" containerType="SINGLE" label="price" name="price" type="number"/>
+</Record>
+</Metadata>
+<Metadata __index="0" __referenceCounter="1" __sourcePath="{}/object" _dataStructure="OBJECT" _id="__id" _type="Input" id="ab6f7d12-dbd2-481c-abeb-6ee736e3099a">
+<Record fieldDelimiter="," name="object" recordDelimiter="\n\\|\r\n\\|\r" type="delimited">
+<Field __artificialType="_id" __systemManaged="true" name="__id" type="string"/>
+</Record>
+</Metadata>
+<Dictionary>
+<Entry id="DictionaryEntry0" input="true" name="inputPayload" output="false" type="object"/>
+<Entry id="DictionaryEntry1" input="false" name="outputPayload" output="true" type="object"/>
+</Dictionary>
+</Global>
+<Phase number="0">
+<Node cacheInMemory="true" enabled="enabled" fileURL="dict:outputPayload" guiName="Pojo WRITER" guiX="900" guiY="20" id="BEAN_WRITER0" type="BEAN_WRITER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<clover:collection clover:name="list" xmlns:clover="http://www.cloveretl.com/ns/xmlmapping">
+  <item clover:inPort="0">
+    <airlineName>$0.airlineName</airlineName>
+    <availableSeats>$0.availableSeats</availableSeats>
+    <departuredate>$0.departuredate</departuredate>
+    <destination>$0.destination</destination>
+    <flightCode>$0.flightCode</flightCode>
+    <origination>$0.origination</origination>
+    <planeType>$0.planeType</planeType>
+    <price>$0.price</price>
+  </item>
+  <item clover:inPort="1">
+    <airlineName>$1.airlineName</airlineName>
+    <availableSeats>$1.availableSeats</availableSeats>
+    <departuredate>$1.departuredate</departuredate>
+    <destination>$1.destination</destination>
+    <flightCode>$1.flightCode</flightCode>
+    <origination>$1.origination</origination>
+    <planeType>$1.planeType</planeType>
+    <price>$1.price</price>
+  </item>
+</clover:collection>]]></attr>
+<attr name="_data_format"><![CDATA[JAVA]]></attr>
+<attr name="schema"><![CDATA[<?xml version="1.0" encoding="UTF-8"?><schema-object>
+  <schema-collection>
+    <typed-object-ref type-ref="com.mulesoft.training.Flight"/>
+  </schema-collection>
+  <typed-object type="int"/>
+  <typed-object type="java.lang.String"/>
+  <typed-object type="double"/>
+  <typed-object type="com.mulesoft.training.Flight">
+    <typed-object-ref name="airlineName" type-ref="java.lang.String"/>
+    <typed-object-ref name="availableSeats" type-ref="int"/>
+    <typed-object-ref name="departuredate" type-ref="java.lang.String"/>
+    <typed-object-ref name="destination" type-ref="java.lang.String"/>
+    <typed-object-ref name="flightCode" type-ref="java.lang.String"/>
+    <typed-object-ref name="origination" type-ref="java.lang.String"/>
+    <typed-object-ref name="planeType" type-ref="java.lang.String"/>
+    <typed-object-ref name="price" type-ref="double"/>
+  </typed-object>
+</schema-object>
+]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Foreach 'flights' -&gt; 'list'" guiX="460" guiY="120" id="FOREACH_FLIGHTS_LIST" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = input.__id;
+//END -> DO NOT REMOVE
+output.airlineName = input.airlineName + input.airlineName;
+output.price = input.price;
+output.departuredate = input.departureDate;
+output.planeType = input.planeType;
+output.destination = input.destination;
+output.origination = input.origin;
+output.availableSeats = input.emptySeats;
+output.flightCode = input.code;]]></attr>
+</Node>
+<Node enabled="enabled" guiName="Foreach 'object' -&gt; 'list'" guiX="460" guiY="20" id="FOREACH_OBJECT_LIST" transformClass="com.mulesoft.datamapper.transform.MelRecordTransform" type="REFORMAT">
+<attr name="melScript"><![CDATA[//MEL
+//START -> DO NOT REMOVE
+output.__id = input.__id;
+//END -> DO NOT REMOVE
+]]></attr>
+</Node>
+<Node charset="UTF-8" enabled="enabled" fileURL="dict:inputPayload" guiName="JSON READER" guiX="20" guiY="20" id="JSON_READER0" type="JSON_READER">
+<attr name="mapping"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Context xpath="/root">
+  <Context outPort="0" sequenceField="__id" xpath="object">
+    <Context generatedKey="__parent_id" outPort="1" parentKey="__id" sequenceField="__id" xpath="flights">
+      <Mapping cloverField="airlineName" trim="true" xpath="airlineName"/>
+      <Mapping cloverField="price" trim="true" xpath="price"/>
+      <Mapping cloverField="departureDate" trim="true" xpath="departureDate"/>
+      <Mapping cloverField="planeType" trim="true" xpath="planeType"/>
+      <Mapping cloverField="origin" trim="true" xpath="origin"/>
+      <Mapping cloverField="emptySeats" trim="true" xpath="emptySeats"/>
+      <Mapping cloverField="code" trim="true" xpath="code"/>
+      <Mapping cloverField="destination" trim="true" xpath="destination"/>
+    </Context>
+  </Context>
+</Context>
+]]></attr>
+<attr name="__isJsonSchema"><![CDATA[false]]></attr>
+<attr name="_data_format"><![CDATA[JSON]]></attr>
+<attr name="jsonSchemaURL"><![CDATA[./src/main/resources/JSONExampleUnitedAirlines2.json]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="FOREACH_FLIGHTS_LIST:0" guiBendpoints="" id="Edge3" inPort="Port 1 (in)" metadata="ea6e123f-8474-4920-85c8-27c3aa242820" outPort="Port 0 (out)" toNode="BEAN_WRITER0:1"/>
+<Edge debugMode="true" fromNode="FOREACH_OBJECT_LIST:0" guiBendpoints="" id="Edge1" inPort="Port 0 (in)" metadata="ea6e123f-8474-4920-85c8-27c3aa242820" outPort="Port 0 (out)" toNode="BEAN_WRITER0:0"/>
+<Edge debugMode="true" fromNode="JSON_READER0:0" guiBendpoints="" id="Edge0" inPort="Port 0 (in)" metadata="ab6f7d12-dbd2-481c-abeb-6ee736e3099a" outPort="Port 0 (out)" toNode="FOREACH_OBJECT_LIST:0"/>
+<Edge debugMode="true" fromNode="JSON_READER0:1" guiBendpoints="" id="Edge2" inPort="Port 0 (in)" metadata="211803f6-a273-49a5-9833-222365b2d700" outPort="Port 1 (out)" toNode="FOREACH_FLIGHTS_LIST:0"/>
+</Phase>
+</Graph>

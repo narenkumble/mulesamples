@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd">
+    <ws:consumer-config name="Web_Service_Consumer" wsdlLocation="http://airlines.cloudhub.io/delta?wsdl" service="TicketServiceService" port="TicketServicePort" serviceAddress="http://airlines.cloudhub.io/delta" doc:name="Web Service Consumer"/>
+    <data-mapper:config name="Pojo_to_XML_findFlight_" transformationGraphPath="pojo_to_xml_findflight_.grf" doc:name="Pojo_to_XML_findFlight_"/>
+    <db:mysql-config name="MySQL_Configuration" host="localhost" port="3306" user="root" password="root" database="training" doc:name="MySQL Configuration"/>
+    
+    <spring:beans>
+        <spring:bean id="AccountDB" name="AccountDB" class="com.mulesoft.training.DBInitialization" scope="singleton"/>
+    </spring:beans>
+	
+	<db:generic-config name="AccountDBConfig" url="jdbc:derby:memory:muleEmbeddedDB;create=true" driverClassName="org.apache.derby.jdbc.AutoloadedDriver" doc:name="Generic Database Configuration"/>
+    <data-mapper:config name="Xml_findFlightResponse__To_Pojo" transformationGraphPath="xml_findflightresponse__to_pojo.grf" doc:name="Xml_findFlightResponse__To_Pojo"/>
+    <data-mapper:config name="List_Map__To_Pojo" transformationGraphPath="list_map__to_pojo.grf" doc:name="List_Map__To_Pojo"/>
+    <data-mapper:config name="JSON_To_Pojo_1" transformationGraphPath="json_to_pojo_1.grf" doc:name="JSON_To_Pojo_1"/>
+    <data-mapper:config name="JSON_To_Pojo" transformationGraphPath="json_to_pojo.grf" doc:name="JSON_To_Pojo"/>
+    <data-mapper:config name="Pojo_To_Pojo" transformationGraphPath="pojo_to_pojo.grf" doc:name="Pojo_To_Pojo"/>
+    <data-mapper:config name="Pojo_To_Pojo_1" transformationGraphPath="pojo_to_pojo_1.grf" doc:name="Pojo_To_Pojo_1"/>
+    <data-mapper:config name="Pojo_To_Pojo_1Pojo_To_Pojo_2" transformationGraphPath="pojo_to_pojo_2.grf" doc:name="Pojo_To_Pojo_1Pojo_To_Pojo_2"/>
+    <catch-exception-strategy name="Catch_Exception_Strategy">
+        <logger level="INFO" doc:name="Logger"/>
+        <set-payload value="Error" doc:name="Set Payload"/>
+    </catch-exception-strategy>
+    <apikit:config name="Router" raml="airRAML.raml" consoleEnabled="true" consolePath="console" doc:name="Router">
+        <apikit:flow-mapping resource="/flights/{destination}" action="get" flow-ref="prepare_payload"/>
+    </apikit:config>
+    
+    <apikit:mapping-exception-strategy name="Mapping_Exception_Strategy" doc:name="Mapping Exception Strategy">
+    <apikit:mapping statusCode="404">
+        <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload"/>
+    </apikit:mapping>
+    <apikit:mapping statusCode="404">
+        <apikit:exception value="org.mule.routing.CompositeRoutingException"/>
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{ &quot;message&quot;: &quot;Resource not found. No Such Airport&quot;}" doc:name="Set Payload"/>
+    </apikit:mapping>
+    <apikit:mapping statusCode="405">
+        <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload"/>
+    </apikit:mapping>
+    <apikit:mapping statusCode="415">
+        <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload"/>
+    </apikit:mapping>
+    <apikit:mapping statusCode="406">
+        <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload"/>
+    </apikit:mapping>
+    <apikit:mapping statusCode="400">
+        <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
+    </apikit:mapping>
+</apikit:mapping-exception-strategy>
+    <flow name="lab2_day1Flow3" doc:name="lab2_day1Flow3">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="api" doc:name="HTTP"/>
+        <apikit:router config-ref="Router" doc:name="APIkit Router"/>
+        <exception-strategy ref="Mapping_Exception_Strategy" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="prepare_payload" doc:name="prepare_payload">
+        <set-payload value="{&quot;destination&quot;:&quot;#[message.payload.substring(13)]&quot;}" doc:name="Set Payload"/>
+        <flow-ref name="lab2_day1Flow1" doc:name="Flow Reference"/>
+    </flow>
+    <flow name="lab2_day1Flow2" doc:name="lab2_day1Flow2">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" path="flight" doc:name="HTTP"/>
+        <choice doc:name="Choice">
+            <when expression="#[message.inboundProperties['http.method'].equals(&quot;GET&quot;)]">
+                <flow-ref name="Main_Flow" doc:name="Flow Reference"/>
+            </when>
+            <when expression="#[message.inboundProperties['http.method'].equals(&quot;POST&quot;)]">
+                <flow-ref name="lab2_day1Flow1" doc:name="Flow Reference"/>
+            </when>
+            <otherwise>
+                <logger message="&quot;Invalid Choice&quot;" level="INFO" doc:name="Logger"/>
+            </otherwise>
+        </choice>
+        <catch-exception-strategy doc:name="Catch Exception Strategy">
+            <logger message="==================BEGIN AIRPORT REQUEST ERROR ===================#['\n']Mule could not find results for Airport Code: #[flowVars.destination]==================END AIRPORT REQUEST ERROR ===================" level="ERROR" doc:name="Logger"/>
+            <set-payload value="Airport #[flowVars.destination] is not a valid airport" doc:name="Set Payload"/>
+        </catch-exception-strategy>
+    </flow>
+    <flow name="lab2_day1Flow1" doc:name="lab2_day1Flow1">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="combineQueue" doc:name="VM"/>
+        <json:json-to-object-transformer returnClass="com.mulesoft.training.FlightRequest" doc:name="JSON to Object"/>
+        <set-variable variableName="destination" value="#[message.payload.getDestination()]" doc:name="Variable"/>
+        <scatter-gather doc:name="Scatter-Gather">
+            <vm:outbound-endpoint exchange-pattern="request-response" path="deltaFlow" doc:name="VM"/>
+            <vm:outbound-endpoint exchange-pattern="request-response" path="unitedFlow" doc:name="VM"/>
+            <vm:outbound-endpoint exchange-pattern="request-response" path="americanFlow" doc:name="VM"/>
+        </scatter-gather>
+        <combine-collections-transformer doc:name="Combine Collections"/>
+        <component class="com.mulesoft.training.custom.transformer.FlightSorter" doc:name="Java"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="Main_Flow" doc:name="Main_Flow">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="flightQueue" doc:name="VM"/>
+        <parse-template location="FlightFinder.html" doc:name="Parse Template"/>
+        <set-property propertyName="content-type" value="text/html" doc:name="Property"/>
+    </flow>
+    <flow name="Delta_Sub_Flow" doc:name="Delta_Sub_Flow">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="deltaFlow" doc:name="VM"/>
+        <logger level="INFO" doc:name="Logger"/>
+        <data-mapper:transform config-ref="Pojo_to_XML_findFlight_" doc:name="Pojo to XML&lt;findFlight&gt;">
+            <data-mapper:input-arguments>
+                <data-mapper:input-argument key="StaticDestination">#[message.payload.getDestination()]</data-mapper:input-argument>
+            </data-mapper:input-arguments>
+        </data-mapper:transform>
+       
+        <ws:consumer config-ref="Web_Service_Consumer" operation="findFlight" doc:name="Web Service Consumer"/>
+        <data-mapper:transform config-ref="Xml_findFlightResponse__To_Pojo" doc:name="Xml&lt;findFlightResponse&gt; To Pojo"/>
+        
+    </flow>
+    <flow name="United__Sub_Flow" doc:name="United__Sub_Flow">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="unitedFlow" doc:name="VM"/>
+        <set-variable variableName="path" value="#[message.payload.getDestination()]" doc:name="Variable"/>
+        <http:outbound-endpoint exchange-pattern="request-response" host="airlines.cloudhub.io" port="80" path="united/flight/#[flowVars.path]" method="GET" doc:name="HTTP"/>
+        <data-mapper:transform config-ref="JSON_To_Pojo" doc:name="JSON To Pojo"/>
+    </flow>
+    <flow name="American_Sub_Flow" doc:name="American_Sub_Flow">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="americanFlow" doc:name="VM"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT * FROM currentFlights where destination = #[message.payload.getDestination()]]]></db:parameterized-query>
+        </db:select>
+        <data-mapper:transform config-ref="List_Map__To_Pojo" doc:name="List&lt;Map&gt; To Pojo"/>
+    </flow>
+    <flow name="Delta_Flow" doc:name="Delta_Flow">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8082" path="delta" doc:name="HTTP"/>
+        <data-mapper:transform config-ref="Pojo_To_Pojo_1Pojo_To_Pojo_2" doc:name="Pojo To Pojo">
+            <data-mapper:input-arguments>
+                <data-mapper:input-argument key="destination">#[message.inboundProperties['http.query.params']['destination']]</data-mapper:input-argument>
+            </data-mapper:input-arguments>
+        </data-mapper:transform>
+        <flow-ref name="Delta_Sub_Flow" doc:name="Flow Reference"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="United_Flow" doc:name="United_Flow">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8083" path="united" doc:name="HTTP"/>
+        <data-mapper:transform config-ref="Pojo_To_Pojo" doc:name="Pojo To Pojo">
+            <data-mapper:input-arguments>
+                <data-mapper:input-argument key="Destination">#[message.payload.substring(message.payload.lastIndexOf('/')+1)]</data-mapper:input-argument>
+            </data-mapper:input-arguments>
+        </data-mapper:transform>
+        <flow-ref name="United__Sub_Flow" doc:name="Flow Reference"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="American_Flow" doc:name="American_Flow">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8084" path="american" doc:name="HTTP"/>
+        <data-mapper:transform config-ref="Pojo_To_Pojo_1" doc:name="Pojo To Pojo">
+            <data-mapper:input-arguments>
+                <data-mapper:input-argument key="StaticValue">SFO</data-mapper:input-argument>
+            </data-mapper:input-arguments>
+        </data-mapper:transform>
+        <flow-ref name="American_Sub_Flow" doc:name="Flow Reference"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+</mule>

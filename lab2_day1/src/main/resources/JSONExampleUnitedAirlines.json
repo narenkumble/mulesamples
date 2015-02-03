@@ -1,0 +1,32 @@
+[
+  {
+    "airlineName":"United",
+    "price":400.12,
+    "departureDate":"2015/03/20",
+    "planeType":"Boing 737",
+    "origin":"MUA",
+    "emptySeats":0,
+    "code":"ER38sd",
+    "destination":"SFO"
+  },
+  {
+    "airlineName":"United",
+    "price":945.00,
+    "departureDate":"2015/09/11",
+    "planeType":"Boing 757",
+    "origin":"MUA",
+    "emptySeats":54,
+    "code":"ER39rk",
+    "destination":"SFO"
+  },
+  {
+    "airlineName":"United",
+    "price":954.32,
+    "departureDate":"2015/02/12",
+    "planeType":"Boing 777",
+    "origin":"MUA",
+    "emptySeats":23,
+    "code":"ER39rj",
+    "destination":"SFO"
+  }
+]
